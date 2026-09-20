@@ -1,0 +1,36 @@
+# =========================
+# Frontend - React / Vite
+# =========================
+InstituteMangementSystem-frontend/node_modules/
+InstituteMangementSystem-frontend/dist/
+InstituteMangementSystem-frontend/build/
+InstituteMangementSystem-frontend/.env
+
+# =========================
+# Backend - Spring Boot
+# =========================
+SmartCollegeERP/target/
+SmartCollegeERP/.env
+
+# =========================
+# Git backup folders
+# =========================
+**/.git-backup/
+
+# =========================
+# IDE
+# =========================
+.idea/
+.vscode/
+
+# =========================
+# Environment files
+# =========================
+.env
+*.env
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
