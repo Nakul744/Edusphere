@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import AdminNavbar from "../components/adminComponents/AdminNavbar";
+import Footer from "../components/Footer";
 
 function CreateAdmin() {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ function CreateAdmin() {
 
   return (
     <div>
-      <AdminNavbar/>
+      <AdminNavbar />
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
           <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
