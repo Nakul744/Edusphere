@@ -1,10 +1,11 @@
+
 package com.smartcollege.SmartCollegeERP.service;
 
 import com.smartcollege.SmartCollegeERP.model.Enrollment;
 import com.smartcollege.SmartCollegeERP.model.Payment;
+import com.smartcollege.SmartCollegeERP.repository.CourseRepository;
 import com.smartcollege.SmartCollegeERP.repository.EnrollmentRepository;
 import com.smartcollege.SmartCollegeERP.repository.PaymentRepository;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +17,24 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final CourseRepository courseRepository;
 
-    public void makePayment(String courseId, String studentEmail, double amount){
-
-        // Check if already enrolled
-        if(enrollmentRepository.existsByStudentEmailAndCourseId(studentEmail, courseId)){
-            throw new RuntimeException("Already enrolled in this course");
+    public boolean makePayment(String courseId, String studentEmail, double amount) {
+        if (studentEmail == null || studentEmail.isBlank()) {
+            throw new IllegalArgumentException("Authenticated user email is missing");
+        }
+        if (!courseRepository.existsById(courseId)) {
+            throw new IllegalArgumentException("Course not found: " + courseId);
+        }
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than 0");
         }
 
-        // Save payment
+        // Already enrolled -> do not throw 500
+        if (enrollmentRepository.existsByStudentEmailAndCourseId(studentEmail, courseId)) {
+            return false;
+        }
+
         Payment payment = Payment.builder()
                 .courseId(courseId)
                 .studentEmail(studentEmail)
@@ -35,7 +45,6 @@ public class PaymentService {
 
         paymentRepository.save(payment);
 
-        // Create enrollment
         Enrollment enrollment = Enrollment.builder()
                 .courseId(courseId)
                 .studentEmail(studentEmail)
@@ -43,5 +52,6 @@ public class PaymentService {
                 .build();
 
         enrollmentRepository.save(enrollment);
+        return true;
     }
 }

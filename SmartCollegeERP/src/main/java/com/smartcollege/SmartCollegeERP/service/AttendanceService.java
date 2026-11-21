@@ -1,11 +1,10 @@
+
 package com.smartcollege.SmartCollegeERP.service;
 
 import com.smartcollege.SmartCollegeERP.dto.AttendanceDashboardResponse;
 import com.smartcollege.SmartCollegeERP.model.Attendance;
 import com.smartcollege.SmartCollegeERP.repository.AttendanceRepository;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,44 +16,47 @@ public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
 
-    // ✅ Mark Attendance
-    public Attendance markAttendance(String courseId, String studentEmail, boolean present){
-
-        LocalDate today = LocalDate.now();
-
-        boolean alreadyMarked =
-                attendanceRepository.existsByCourseIdAndStudentEmailAndDate(
-                        courseId,
-                        studentEmail,
-                        today
-                );
-
-        if(alreadyMarked){
-            throw new RuntimeException("Attendance already marked for today");
+    // Mark or update today's attendance
+    public Attendance markAttendance(String courseId, String studentEmail, boolean present) {
+        if (courseId == null || courseId.isBlank() || studentEmail == null || studentEmail.isBlank()) {
+            throw new IllegalArgumentException("courseId and studentEmail are required");
         }
 
-        Attendance attendance = Attendance.builder()
-                .courseId(courseId)
-                .studentEmail(studentEmail)
-                .date(today)
-                .present(present)
-                .build();
+        String normalizedCourseId = courseId.trim();
+        String normalizedEmail = studentEmail.trim().toLowerCase();
+        LocalDate today = LocalDate.now();
+
+        Attendance attendance = attendanceRepository
+                .findByCourseIdAndStudentEmailAndDate(normalizedCourseId, normalizedEmail, today)
+                .map(existing -> {
+                    existing.setPresent(present);
+                    return existing;
+                })
+                .orElseGet(() -> Attendance.builder()
+                        .courseId(normalizedCourseId)
+                        .studentEmail(normalizedEmail)
+                        .date(today)
+                        .present(present)
+                        .build());
 
         return attendanceRepository.save(attendance);
     }
 
-    // ✅ Get Student Attendance
-    public List<Attendance> getStudentAttendance(String email){
-        return attendanceRepository.findByStudentEmail(email);
+    // Get Student Attendance
+    public List<Attendance> getStudentAttendance(String email) {
+        return attendanceRepository.findByStudentEmail(email.trim().toLowerCase());
     }
 
-    // ✅ Calculate Attendance Percentage
-    public double calculateAttendancePercentage(String courseId, String email){
+    // Calculate Attendance Percentage
+    public double calculateAttendancePercentage(String courseId, String email) {
+        List<Attendance> records = attendanceRepository.findByCourseIdAndStudentEmail(
+                courseId.trim(),
+                email.trim().toLowerCase()
+        );
 
-        List<Attendance> records =
-                attendanceRepository.findByCourseIdAndStudentEmail(courseId, email);
-
-        if(records.isEmpty()) return 0;
+        if (records.isEmpty()) {
+            return 0.0;
+        }
 
         long presentCount = records.stream()
                 .filter(Attendance::isPresent)
@@ -63,24 +65,19 @@ public class AttendanceService {
         return (presentCount * 100.0) / records.size();
     }
 
-    // ✅ Admin Attendance Dashboard
+    // Admin Attendance Dashboard
     public AttendanceDashboardResponse getAttendanceDashboard() {
-
         List<Attendance> records = attendanceRepository.findAll();
 
         long totalRecords = records.size();
-
         long totalPresent = records.stream()
                 .filter(Attendance::isPresent)
                 .count();
-
         long totalAbsent = totalRecords - totalPresent;
 
-        double overallPercentage = 0;
-
-        if (totalRecords > 0) {
-            overallPercentage = (totalPresent * 100.0) / totalRecords;
-        }
+        double overallPercentage = totalRecords > 0
+                ? (totalPresent * 100.0) / totalRecords
+                : 0.0;
 
         return AttendanceDashboardResponse.builder()
                 .totalRecords(totalRecords)

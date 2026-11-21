@@ -1,3 +1,5 @@
+
+
 package com.smartcollege.SmartCollegeERP.model;
 
 import lombok.*;
