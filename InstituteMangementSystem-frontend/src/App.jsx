@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Courses from "./pages/Courses";
@@ -27,20 +27,13 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/register" element={<RegisterUser />} />
 
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <ProtectedRoute>
-              <RegisterUser />
             </ProtectedRoute>
           }
         />
@@ -68,7 +61,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/dashboard"
           element={
@@ -77,7 +69,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/courses"
           element={
@@ -94,7 +85,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/my-courses"
           element={
@@ -111,7 +101,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/notices"
           element={
@@ -160,7 +149,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/assignments/:courseId"
           element={
@@ -169,7 +157,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/submit-assignment/:assignmentId"
           element={
@@ -194,6 +181,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );

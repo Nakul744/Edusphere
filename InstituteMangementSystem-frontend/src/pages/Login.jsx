@@ -1,6 +1,6 @@
 import { useState } from "react";
 import API from "../services/api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 function Login() {
@@ -78,13 +78,14 @@ function Login() {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-        <div className="flex  justify-center p-3 m-2">
-          <h1>
-            Create a new Account here {" "}
-             <a href="/register" className="text-blue-500 hover:underline">
-                Register..
-            </a>{" "}
-          </h1>
+
+        <div className="flex justify-center p-3 m-2">
+          <p className="text-sm text-gray-700">
+            Create a new Account here{" "}
+            <Link to="/register" className="text-blue-500 hover:underline">
+              Register..
+            </Link>
+          </p>
         </div>
       </div>
     </div>
