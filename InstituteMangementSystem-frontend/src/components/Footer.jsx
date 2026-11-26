@@ -9,10 +9,10 @@ function Footer() {
         {/* Logo + Description */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-4">
-            SmartCollegeERP
+            Edusphere
           </h2>
           <p className="text-sm text-gray-400">
-            A modern college management system designed for seamless
+            A modern institute management system designed for seamless
             administration, student management, course tracking,
             payments, and analytics.
           </p>
